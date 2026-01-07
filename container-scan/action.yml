@@ -1,0 +1,109 @@
+name: 'Qualys Container Scan'
+description: 'Scan container images for vulnerabilities using Qualys Container Security'
+author: 'Qualys'
+
+branding:
+  icon: 'shield'
+  color: 'red'
+
+inputs:
+  qualys_access_token:
+    description: 'Qualys API access token from Container Security module'
+    required: true
+  qualys_pod:
+    description: 'Qualys platform POD (US1, US2, US3, US4, EU1, EU2, CA1, IN1, AU1, UK1, AE1, KSA1)'
+    required: true
+    default: 'US3'
+  image_id:
+    description: 'Container image ID or name to scan (e.g., myregistry/myimage:tag)'
+    required: true
+  storage_driver:
+    description: 'Storage driver for local images (none, docker-overlay2, containerd-overlayfs, podman-overlay)'
+    required: false
+    default: 'none'
+  platform:
+    description: 'Multi-arch platform (e.g., linux/amd64, linux/arm64)'
+    required: false
+    default: ''
+  use_policy_evaluation:
+    description: 'Use Qualys cloud policy evaluation instead of local thresholds'
+    required: false
+    default: 'false'
+  policy_tags:
+    description: 'Comma-separated policy tags for cloud policy evaluation'
+    required: false
+    default: ''
+  max_critical:
+    description: 'Maximum allowed critical vulnerabilities (-1 for unlimited)'
+    required: false
+    default: '0'
+  max_high:
+    description: 'Maximum allowed high vulnerabilities (-1 for unlimited)'
+    required: false
+    default: '0'
+  max_medium:
+    description: 'Maximum allowed medium vulnerabilities (-1 for unlimited)'
+    required: false
+    default: '-1'
+  max_low:
+    description: 'Maximum allowed low vulnerabilities (-1 for unlimited)'
+    required: false
+    default: '-1'
+  scan_secrets:
+    description: 'Enable secrets detection in container layers'
+    required: false
+    default: 'false'
+  scan_timeout:
+    description: 'Scan timeout in seconds'
+    required: false
+    default: '300'
+  upload_sarif:
+    description: 'Upload SARIF results to GitHub Security tab'
+    required: false
+    default: 'true'
+  continue_on_error:
+    description: 'Continue workflow even if vulnerabilities exceed thresholds'
+    required: false
+    default: 'false'
+  create_issues:
+    description: 'Create GitHub Issues for discovered vulnerabilities'
+    required: false
+    default: 'false'
+  issue_min_severity:
+    description: 'Minimum severity for issue creation (5=critical, 4=high, 3=medium, 2=low, 1=info)'
+    required: false
+    default: '4'
+  issue_labels:
+    description: 'Additional comma-separated labels for created issues'
+    required: false
+    default: ''
+  issue_assignees:
+    description: 'Comma-separated GitHub usernames to assign to created issues'
+    required: false
+    default: ''
+
+outputs:
+  vulnerability_count:
+    description: 'Total number of vulnerabilities found'
+  critical_count:
+    description: 'Number of critical vulnerabilities'
+  high_count:
+    description: 'Number of high vulnerabilities'
+  medium_count:
+    description: 'Number of medium vulnerabilities'
+  low_count:
+    description: 'Number of low vulnerabilities'
+  policy_result:
+    description: 'Policy evaluation result (ALLOW, DENY, AUDIT, or NONE)'
+  scan_passed:
+    description: 'Whether the scan passed threshold/policy checks (true/false)'
+  sarif_path:
+    description: 'Path to the generated SARIF report'
+  json_path:
+    description: 'Path to the generated JSON report'
+  issues_created:
+    description: 'Number of GitHub Issues created'
+
+runs:
+  using: 'node20'
+  main: '../dist/container-scan/index.js'

@@ -1,0 +1,112 @@
+name: Qualys Code Scan
+
+on:
+  workflow_call:
+    inputs:
+      scan_path:
+        description: 'Directory path to scan'
+        required: false
+        type: string
+        default: ''
+      exclude_dirs:
+        description: 'Comma-separated directories to exclude'
+        required: false
+        type: string
+        default: ''
+      max_critical:
+        description: 'Max critical vulnerabilities (-1 for unlimited)'
+        required: false
+        type: string
+        default: '0'
+      max_high:
+        description: 'Max high vulnerabilities (-1 for unlimited)'
+        required: false
+        type: string
+        default: '0'
+      max_medium:
+        description: 'Max medium vulnerabilities (-1 for unlimited)'
+        required: false
+        type: string
+        default: '-1'
+      max_low:
+        description: 'Max low vulnerabilities (-1 for unlimited)'
+        required: false
+        type: string
+        default: '-1'
+      use_policy_evaluation:
+        description: 'Use Qualys cloud policy'
+        required: false
+        type: boolean
+        default: false
+      policy_tags:
+        description: 'Policy tags for evaluation'
+        required: false
+        type: string
+        default: ''
+      scan_secrets:
+        description: 'Enable secrets detection'
+        required: false
+        type: boolean
+        default: false
+      generate_sbom:
+        description: 'Generate SBOM'
+        required: false
+        type: boolean
+        default: false
+      create_issues:
+        description: 'Create GitHub Issues for vulnerabilities'
+        required: false
+        type: boolean
+        default: false
+      continue_on_error:
+        description: 'Continue on threshold violation'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      QUALYS_ACCESS_TOKEN:
+        required: true
+    outputs:
+      vulnerability_count:
+        description: 'Total vulnerabilities found'
+        value: ${{ jobs.scan.outputs.vulnerability_count }}
+      scan_passed:
+        description: 'Whether scan passed'
+        value: ${{ jobs.scan.outputs.scan_passed }}
+
+jobs:
+  scan:
+    name: Qualys Code Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      issues: write
+    outputs:
+      vulnerability_count: ${{ steps.scan.outputs.vulnerability_count }}
+      scan_passed: ${{ steps.scan.outputs.scan_passed }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Qualys Code Scan
+        id: scan
+        uses: qualys/qualys-github/code-scan@v1
+        with:
+          qualys_access_token: ${{ secrets.QUALYS_ACCESS_TOKEN }}
+          qualys_pod: ${{ vars.QUALYS_POD }}
+          scan_path: ${{ inputs.scan_path }}
+          exclude_dirs: ${{ inputs.exclude_dirs }}
+          max_critical: ${{ inputs.max_critical }}
+          max_high: ${{ inputs.max_high }}
+          max_medium: ${{ inputs.max_medium }}
+          max_low: ${{ inputs.max_low }}
+          use_policy_evaluation: ${{ inputs.use_policy_evaluation }}
+          policy_tags: ${{ inputs.policy_tags }}
+          scan_secrets: ${{ inputs.scan_secrets }}
+          generate_sbom: ${{ inputs.generate_sbom }}
+          create_issues: ${{ inputs.create_issues }}
+          continue_on_error: ${{ inputs.continue_on_error }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

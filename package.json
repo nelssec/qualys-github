@@ -1,0 +1,40 @@
+{
+  "name": "qualys-github",
+  "version": "1.0.0",
+  "description": "Qualys Security Scanning GitHub Actions for container and code scanning",
+  "private": true,
+  "scripts": {
+    "build": "npm run build:container-scan && npm run build:code-scan",
+    "build:container-scan": "ncc build src/actions/container-scan/index.ts -o dist/container-scan --source-map --license licenses.txt",
+    "build:code-scan": "ncc build src/actions/code-scan/index.ts -o dist/code-scan --source-map --license licenses.txt",
+    "lint": "eslint src --ext .ts",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "qualys",
+    "security",
+    "scanning",
+    "container",
+    "sca",
+    "vulnerability",
+    "github-actions"
+  ],
+  "author": "Qualys",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/github": "^6.0.0",
+    "@actions/io": "^1.1.3",
+    "@actions/tool-cache": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@vercel/ncc": "^0.38.1",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
