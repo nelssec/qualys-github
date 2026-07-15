@@ -1,5 +1,7 @@
 # Qualys GitHub Actions
 
+> ⚠️ **Unofficial project.** This is a personal project and is not affiliated with, endorsed by, or supported by Qualys, Inc.
+
 GitHub Actions for security scanning using Qualys Container Security. Scan container images and code repositories for vulnerabilities directly in your CI/CD pipelines.
 
 ## Features
